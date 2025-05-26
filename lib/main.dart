@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:instagram/routes/app_router.dart';
+import 'core/services/locator.dart';
 
 void main() {
+  setupLocator();
   runApp(MyApp());
 }
 
