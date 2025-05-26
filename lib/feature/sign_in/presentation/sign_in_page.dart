@@ -16,13 +16,13 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
   final AuthService _authService = AuthService();
 
   Future<void> _handleSignIn() async {
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+    if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Hãy nhập đủ các trường')));
@@ -33,7 +33,7 @@ class _SignInPageState extends State<SignInPage> {
 
     try {
       final response = await _authService.signIn(
-        email: _emailController.text,
+        username: _usernameController.text,
         password: _passwordController.text,
       );
 
@@ -42,7 +42,7 @@ class _SignInPageState extends State<SignInPage> {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(response.message)));
-          context.router.push(const DashboardRoute());
+          await context.router.push(const DashboardRoute());
         }
       } else {
         if (mounted) {
@@ -75,7 +75,10 @@ class _SignInPageState extends State<SignInPage> {
             children: [
               SvgPicture.asset(AssetIcons.logosInstagram),
               const SizedBox(height: 48),
-              TextInputWidget(controller: _emailController, hintText: 'Email'),
+              TextInputWidget(
+                controller: _usernameController,
+                hintText: 'Username',
+              ),
               const SizedBox(height: 16),
               TextInputWidget(
                 controller: _passwordController,

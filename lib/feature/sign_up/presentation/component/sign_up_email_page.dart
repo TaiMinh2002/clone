@@ -16,13 +16,13 @@ class SignUpEmailPages extends StatefulWidget {
 }
 
 class _SignUpEmailPagesState extends State<SignUpEmailPages> {
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
   final AuthService _authService = AuthService();
 
   Future<void> _handleSignUp() async {
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+    if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Hãy nhập đủ các trường')));
@@ -33,7 +33,7 @@ class _SignUpEmailPagesState extends State<SignUpEmailPages> {
 
     try {
       final response = await _authService.signUp(
-        email: _emailController.text,
+        username: _usernameController.text,
         password: _passwordController.text,
       );
 
@@ -42,7 +42,7 @@ class _SignUpEmailPagesState extends State<SignUpEmailPages> {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(response.message)));
-          context.router.push(const SignInRoute());
+          await context.router.push(const SignInRoute());
         }
       } else {
         if (mounted) {
@@ -91,7 +91,10 @@ class _SignUpEmailPagesState extends State<SignUpEmailPages> {
       padding: const EdgeInsets.only(top: 48.0, bottom: 24.0),
       child: Column(
         children: [
-          TextInputWidget(controller: _emailController, hintText: 'Email'),
+          TextInputWidget(
+            controller: _usernameController,
+            hintText: 'Username',
+          ),
           const SizedBox(height: 16),
           TextInputWidget(
             controller: _passwordController,
