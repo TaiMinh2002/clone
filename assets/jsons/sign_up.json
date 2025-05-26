@@ -1,0 +1,19 @@
+{
+    "success": true,
+    "data": {
+        "user": {
+            "id": "1",
+            "email": "minh@gmail.com",
+            "password": "Abc1234@",
+            "username": "minhphi",
+            "fullName": "Minh Phi",
+            "profilePicture": "https://www.google.com/imgres?q=shintarou&imgurl=https%3A%2F%2Fcdn.myanimelist.net%2Fr%2F180x220%2Fimages%2Fcharacters%2F7%2F165835.jpg%3Fs%3Dcca4eea6b78a37c1fc9be501795bb726&imgrefurl=https%3A%2F%2Fmyanimelist.net%2Fcharacter%2F22253%2FShintarou_Midorima&docid=O6CHFsbLSfMyjM&tbnid=RrulEQfTsMlVsM&vet=12ahUKEwjP69XblsCNAxXAs1YBHertFB8QM3oECC0QAA..i&w=180&h=220&hcb=2&ved=2ahUKEwjP69XblsCNAxXAs1YBHertFB8QM3oECC0QAA",
+            "bio": "Xin chào, tôi là Minh",
+            "followers": 0,
+            "following": 0,
+            "posts": 0
+        },
+        "token": "mock_jwt_token_123456789"
+    },
+    "message": "Đăng ký thành công"
+}

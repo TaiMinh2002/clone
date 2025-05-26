@@ -18,3 +18,7 @@ class AssetIcons {
 	static const String share = 'assets/icons/share.svg';
 }
 
+class AssetJsons {
+	static const String signUp = 'assets/jsons/sign_up.json';
+}
+

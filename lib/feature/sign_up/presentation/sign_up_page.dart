@@ -73,7 +73,7 @@ class SignUpPage extends StatelessWidget {
   Widget _signUpWithPhoneOrEmail(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.router.push(const SignInRoute());
+        context.router.push(const SignUpEmailRoutes());
       },
       child: const Text(
         'Sign Up With Phone or Email',

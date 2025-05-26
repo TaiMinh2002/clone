@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:instagram/core/services/auth_service.dart';
 import 'package:instagram/core/widgets/button_widget.dart';
 import 'package:instagram/core/widgets/text_input_widget.dart';
 import 'package:instagram/r.dart';
@@ -15,9 +16,53 @@ class SignUpEmailPages extends StatefulWidget {
 }
 
 class _SignUpEmailPagesState extends State<SignUpEmailPages> {
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  final AuthService _authService = AuthService();
+
+  Future<void> _handleSignUp() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Hãy nhập đủ các trường')));
+      return;
+    }
+
+    setState(() {});
+
+    try {
+      final response = await _authService.signUp(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      if (response.success) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(response.message)));
+          context.router.push(const SignInRoute());
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(response.message)));
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() {});
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +91,7 @@ class _SignUpEmailPagesState extends State<SignUpEmailPages> {
       padding: const EdgeInsets.only(top: 48.0, bottom: 24.0),
       child: Column(
         children: [
-          TextInputWidget(controller: _usernameController, hintText: 'Email'),
+          TextInputWidget(controller: _emailController, hintText: 'Email'),
           const SizedBox(height: 16),
           TextInputWidget(
             controller: _passwordController,
@@ -67,7 +112,7 @@ class _SignUpEmailPagesState extends State<SignUpEmailPages> {
   Widget _buttonWidget() {
     return ButtonWidget(
       text: 'Sign Up',
-      onPressed: () {},
+      onPressed: _handleSignUp,
       color: const Color(0xFF1877F2),
     );
   }

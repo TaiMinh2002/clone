@@ -38,6 +38,7 @@ dependencies:
   auto_route: ^10.0.1
   auto_route_generator: ^10.0.1
   injectable: ^2.5.0
+  freezed_annotation: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +65,7 @@ flutter:
   assets:
     - assets/images/ 
     - assets/icons/
+    - assets/jsons/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
