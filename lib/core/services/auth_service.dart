@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:instagram/r.dart';
 import '../models/auth_response_model.dart';
 import '../models/user_model.dart';
 
@@ -13,11 +14,9 @@ class AuthService {
     // Simulate network delay
     await Future<void>.delayed(const Duration(seconds: 1));
 
-    // Load mock data from JSON file
-    final response = await rootBundle.loadString('assets/jsons/sign_up.json');
+    final response = await rootBundle.loadString(AssetJsons.signUp);
     final data = json.decode(response) as Map<String, dynamic>;
 
-    // Validation
     if (email.isEmpty || password.isEmpty) {
       return const AuthResponse(
         success: false,
@@ -39,7 +38,6 @@ class AuthService {
       );
     }
 
-    // Check if email matches the mock data
     if (email != data['data']['user']['email']) {
       return const AuthResponse(
         success: false,
@@ -61,7 +59,6 @@ class AuthService {
       );
     }
 
-    // For demo purposes, we'll accept any password
     return AuthResponse.fromJson(data);
   }
 }
