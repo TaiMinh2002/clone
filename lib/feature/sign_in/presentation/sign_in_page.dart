@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:instagram/core/services/auth_service.dart';
 import 'package:instagram/core/widgets/button_widget.dart';
 import 'package:instagram/core/widgets/text_input_widget.dart';
 import 'package:instagram/r.dart';
@@ -15,9 +16,53 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  final AuthService _authService = AuthService();
+
+  Future<void> _handleSignIn() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Hãy nhập đủ các trường')));
+      return;
+    }
+
+    setState(() {});
+
+    try {
+      final response = await _authService.signIn(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      if (response.success) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(response.message)));
+          context.router.push(const DashboardRoute());
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(response.message)));
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() {});
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +75,7 @@ class _SignInPageState extends State<SignInPage> {
             children: [
               SvgPicture.asset(AssetIcons.logosInstagram),
               const SizedBox(height: 48),
-              TextInputWidget(
-                controller: _usernameController,
-                hintText: 'Username',
-              ),
+              TextInputWidget(controller: _emailController, hintText: 'Email'),
               const SizedBox(height: 16),
               TextInputWidget(
                 controller: _passwordController,
@@ -49,9 +91,7 @@ class _SignInPageState extends State<SignInPage> {
               const SizedBox(height: 24),
               ButtonWidget(
                 text: 'Log in',
-                onPressed: () {
-                  context.router.push(const DashboardRoute());
-                },
+                onPressed: _handleSignIn,
                 color: const Color(0xFF1877F2),
               ),
               const SizedBox(height: 24),

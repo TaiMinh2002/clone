@@ -19,6 +19,7 @@ class AssetIcons {
 }
 
 class AssetJsons {
+	static const String signIn = 'assets/jsons/sign_in.json';
 	static const String signUp = 'assets/jsons/sign_up.json';
 }
 

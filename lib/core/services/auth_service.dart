@@ -11,10 +11,63 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    // Simulate network delay
     await Future<void>.delayed(const Duration(seconds: 1));
 
     final response = await rootBundle.loadString(AssetJsons.signUp);
+    final data = json.decode(response) as Map<String, dynamic>;
+
+    if (email.isEmpty || password.isEmpty) {
+      return const AuthResponse(
+        success: false,
+        data: AuthData(
+          user: User(
+            id: '',
+            email: '',
+            username: '',
+            fullName: '',
+            profilePicture: '',
+            bio: '',
+            followers: 0,
+            following: 0,
+            posts: 0,
+          ),
+          token: '',
+        ),
+        message: 'Vui lòng nhập email và mật khẩu',
+      );
+    }
+
+    if (email != data['data']['user']['email']) {
+      return const AuthResponse(
+        success: false,
+        data: AuthData(
+          user: User(
+            id: '',
+            email: '',
+            username: '',
+            fullName: '',
+            profilePicture: '',
+            bio: '',
+            followers: 0,
+            following: 0,
+            posts: 0,
+          ),
+          token: '',
+        ),
+        message: 'Email hoặc mật khẩu không đúng',
+      );
+    }
+
+    return AuthResponse.fromJson(data);
+  }
+
+  Future<AuthResponse> signIn({
+    required String email,
+    required String password,
+  }) async {
+    await Future<void>.delayed(const Duration(seconds: 1));
+
+    final response = await rootBundle.loadString(AssetJsons.signIn);
     final data = json.decode(response) as Map<String, dynamic>;
 
     if (email.isEmpty || password.isEmpty) {
