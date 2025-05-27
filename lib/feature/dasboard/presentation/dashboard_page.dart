@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagram/feature/home/presentation/home_page.dart';
+import 'package:instagram/feature/profile/presentation/profile_page.dart';
 import 'package:instagram/r.dart';
 
 @RoutePage()
@@ -28,7 +29,7 @@ class _DashboardPageState extends State<DashboardPage> {
     const Center(child: Text('Search Page')),
     const Center(child: Text('Reel Page')),
     const Center(child: Text('Cart Page')),
-    const Center(child: Text('Profile Page')),
+    const ProfilePage(),
   ];
 
   void _onItemTapped(int index) {

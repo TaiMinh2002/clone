@@ -17,6 +17,8 @@ class AuthService {
     ),
   );
 
+  Dio get dio => _dio;
+
   AuthService() {
     _loadTokens();
     _dio.interceptors.add(
@@ -81,6 +83,13 @@ class AuthService {
       await prefs.setString(_refreshTokenKey, refreshToken);
       _refreshToken = refreshToken;
     }
+  }
+
+  Future<String?> getAccessToken() async {
+    if (_accessToken == null) {
+      await _loadTokens();
+    }
+    return _accessToken;
   }
 
   Future<Auth> signUp({
