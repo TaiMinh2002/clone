@@ -227,14 +227,14 @@ class _HomePageViewState extends State<HomePageView> {
                 );
               }
               if (snapshot.hasError) {
-                return const Center(child: Text('Lỗi khi tải comment'));
+                return const Center(child: Text('Error loading comments'));
               }
               final comments = snapshot.data?.$1 ?? [];
               if (comments.isEmpty) {
                 return const Center(
                   child: Padding(
                     padding: EdgeInsets.all(32),
-                    child: Text('Chưa có comment nào'),
+                    child: Text('No comments'),
                   ),
                 );
               }
@@ -255,7 +255,7 @@ class _HomePageViewState extends State<HomePageView> {
                     const Spacer(),
                     TextInputWidget(
                       controller: _commentController,
-                      hintText: 'Thêm comment',
+                      hintText: 'Add comment',
                     ),
                   ],
                 ),
@@ -319,7 +319,7 @@ class _HomePageViewState extends State<HomePageView> {
                       ),
                     ),
                   ),
-                  const Text('Trả lời'),
+                  const Text('Reply'),
                 ],
               ),
             ),
