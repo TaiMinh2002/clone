@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:instagram/core/models/comment.dart';
 import 'package:instagram/core/models/post.dart';
 import 'package:instagram/core/services/locator.dart';
 import 'package:instagram/core/services/post_service.dart';
+import 'package:instagram/core/widgets/text_input_widget.dart';
+import 'package:instagram/feature/home/presentation/components/body_text.dart';
 import 'package:instagram/feature/home/presentation/home_page_bloc.dart';
 import 'package:instagram/feature/home/presentation/home_page_event.dart';
 import 'package:instagram/feature/home/presentation/home_page_state.dart';
@@ -32,6 +35,7 @@ class HomePageView extends StatefulWidget {
 class _HomePageViewState extends State<HomePageView> {
   late final ScrollController _scrollController;
   bool _isLoadingMore = false;
+  final TextEditingController _commentController = TextEditingController();
 
   @override
   void initState() {
@@ -67,6 +71,7 @@ class _HomePageViewState extends State<HomePageView> {
     return Scaffold(
       appBar: AppBar(
         title: SvgPicture.asset(AssetIcons.logosInstagram, height: 32),
+        centerTitle: false,
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
@@ -117,20 +122,7 @@ class _HomePageViewState extends State<HomePageView> {
                     ),
                     _actionWidget(post),
                     _descriptionWidget(post),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Wrap(
-                        spacing: 8,
-                        children: post.tags
-                            .map(
-                              (tag) => Chip(
-                                label: Text('#$tag'),
-                                backgroundColor: Colors.grey[200],
-                              ),
-                            )
-                            .toList(),
-                      ),
-                    ),
+                    _tagsWidget(post),
                     const SizedBox(height: 16),
                   ],
                 );
@@ -169,20 +161,8 @@ class _HomePageViewState extends State<HomePageView> {
   }
 
   Widget _actionWidget(Post post) {
-    final commentCount =
-        (context
-                .findAncestorWidgetOfExactType<
-                  BlocBuilder<HomePageBloc, HomePageState>
-                >()
-                ?.builder !=
-            null)
-        ? (context.findAncestorStateOfType<_HomePageViewState>()?.widget.key !=
-                  null
-              ? 0
-              : 0)
-        : 0;
     final state = context.read<HomePageBloc>().state;
-    int count = 0;
+    var count = 0;
     if (state is HomePageLoaded) {
       count = state.commentCounts[post.id] ?? 0;
     }
@@ -195,10 +175,17 @@ class _HomePageViewState extends State<HomePageView> {
             padding: const EdgeInsets.only(left: 5, right: 10),
             child: Text('${post.views}'),
           ),
-          SvgPicture.asset(AssetIcons.comment),
-          Padding(
-            padding: const EdgeInsets.only(left: 5, right: 10),
-            child: Text('$count'),
+          GestureDetector(
+            onTap: () => _showCommentsBottomSheet(context, post.id),
+            child: Row(
+              children: [
+                SvgPicture.asset(AssetIcons.comment),
+                Padding(
+                  padding: const EdgeInsets.only(left: 5, right: 10),
+                  child: Text('$count'),
+                ),
+              ],
+            ),
           ),
           SvgPicture.asset(AssetIcons.share),
           const Spacer(),
@@ -208,77 +195,139 @@ class _HomePageViewState extends State<HomePageView> {
     );
   }
 
+  Future<void> _showCommentsBottomSheet(
+    BuildContext context,
+    int postId,
+  ) async {
+    // ignore: inference_failure_on_function_invocation
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return SizedBox(
+          height: MediaQuery.of(context).size.height * 0.6,
+          child: FutureBuilder<(List<Comment>, int)>(
+            future: locator<PostService>().fetchCommentsByPostId(postId),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32),
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
+              if (snapshot.hasError) {
+                return const Center(child: Text('Lỗi khi tải comment'));
+              }
+              final comments = snapshot.data?.$1 ?? [];
+              if (comments.isEmpty) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32),
+                    child: Text('Chưa có comment nào'),
+                  ),
+                );
+              }
+              return SafeArea(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.4,
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: comments.length,
+                        itemBuilder: (context, index) {
+                          final cmt = comments[index];
+                          return _commentWidget(cmt);
+                        },
+                      ),
+                    ),
+                    const Spacer(),
+                    TextInputWidget(
+                      controller: _commentController,
+                      hintText: 'Thêm comment',
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
   Widget _descriptionWidget(Post post) {
     return Padding(
       padding: const EdgeInsets.only(left: 16, right: 30, bottom: 10),
-      child: _ExpandableText(title: post.title, body: post.body),
+      child: BodyText(title: post.title, body: post.body),
     );
   }
-}
 
-class _ExpandableText extends StatefulWidget {
-  final String title;
-  final String body;
-  const _ExpandableText({required this.title, required this.body});
-
-  @override
-  State<_ExpandableText> createState() => _ExpandableTextState();
-}
-
-class _ExpandableTextState extends State<_ExpandableText> {
-  bool _expanded = false;
-  bool _isOverflow = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final textStyle = const TextStyle(
-      fontSize: 14,
-      fontWeight: FontWeight.w400,
+  Widget _tagsWidget(Post post) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, right: 30, bottom: 10),
+      child: Wrap(
+        spacing: 8,
+        children: post.tags.map((tag) => Chip(label: Text('#$tag'))).toList(),
+      ),
     );
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final span = TextSpan(text: widget.body, style: textStyle);
-        final tp = TextPainter(
-          text: span,
-          maxLines: 2,
-          textDirection: TextDirection.ltr,
-        )..layout(maxWidth: constraints.maxWidth);
-        _isOverflow = tp.didExceedMaxLines;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+  }
+
+  Widget _commentWidget(Comment cmt) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20.0),
+      child: Row(
+        children: [
+          CircleAvatar(
+            backgroundImage: NetworkImage(
+              'https://randomuser.me/api/portraits/men/${cmt.user.id % 100}.jpg',
             ),
-            GestureDetector(
-              onTap: _isOverflow
-                  ? () => setState(() => _expanded = !_expanded)
-                  : null,
-              child: _expanded || !_isOverflow
-                  ? Text(widget.body, style: textStyle)
-                  : Text.rich(
-                      TextSpan(
-                        text: widget.body,
-                        style: textStyle,
-                        children: [
-                          const TextSpan(text: '...'),
-                          TextSpan(
-                            text: 'more',
-                            style: const TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+          ),
+
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    cmt.user.fullName,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
                     ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 5, bottom: 10),
+                    child: Text(
+                      cmt.body,
+                      maxLines: 3,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                  const Text('Trả lời'),
+                ],
+              ),
             ),
-          ],
-        );
-      },
+          ),
+
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SvgPicture.asset(AssetIcons.favorite),
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text('${cmt.likes}'),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
