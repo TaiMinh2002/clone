@@ -8,6 +8,7 @@ class AssetIcons {
 	static const String cart = 'assets/icons/cart.svg';
 	static const String comment = 'assets/icons/comment.svg';
 	static const String favorite = 'assets/icons/favorite.svg';
+	static const String favorited = 'assets/icons/favorited.svg';
 	static const String home = 'assets/icons/home.svg';
 	static const String iconFacebook = 'assets/icons/icon_facebook.svg';
 	static const String logosInstagram = 'assets/icons/logos_instagram.svg';

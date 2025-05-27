@@ -11,9 +11,11 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
   bool _hasMore = true;
   final List<Post> _posts = [];
   final Map<int, int> _commentCounts = {};
+  final Set<int> _likedPosts = {};
 
   HomePageBloc(this.postService) : super(HomePageLoading()) {
     on<HomePageFetchPosts>(_onFetchPosts);
+    on<HomePageToggleLike>(_onToggleLike);
   }
 
   Future<void> _onFetchPosts(
@@ -38,10 +40,26 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
           posts: List.from(_posts),
           hasMore: _hasMore,
           commentCounts: Map.from(_commentCounts),
+          likedPosts: _likedPosts,
         ),
       );
     } catch (e) {
       emit(HomePageError(message: e.toString()));
+    }
+  }
+
+  void _onToggleLike(HomePageToggleLike event, Emitter<HomePageState> emit) {
+    if (state is HomePageLoaded) {
+      final currentState = state as HomePageLoaded;
+      final newLikedPosts = Set<int>.from(currentState.likedPosts);
+
+      if (newLikedPosts.contains(event.postId)) {
+        newLikedPosts.remove(event.postId);
+      } else {
+        newLikedPosts.add(event.postId);
+      }
+
+      emit(currentState.copyWith(likedPosts: newLikedPosts));
     }
   }
 }

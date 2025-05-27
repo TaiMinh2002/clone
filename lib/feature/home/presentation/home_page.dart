@@ -163,14 +163,23 @@ class _HomePageViewState extends State<HomePageView> {
   Widget _actionWidget(Post post) {
     final state = context.read<HomePageBloc>().state;
     var count = 0;
+    var isLiked = false;
     if (state is HomePageLoaded) {
       count = state.commentCounts[post.id] ?? 0;
+      isLiked = state.likedPosts.contains(post.id);
     }
     return Padding(
       padding: const EdgeInsets.only(left: 16, right: 30, bottom: 10, top: 10),
       child: Row(
         children: [
-          SvgPicture.asset(AssetIcons.favorite),
+          GestureDetector(
+            onTap: () {
+              context.read<HomePageBloc>().add(HomePageToggleLike(post.id));
+            },
+            child: SvgPicture.asset(
+              isLiked ? AssetIcons.favorited : AssetIcons.favorite,
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.only(left: 5, right: 10),
             child: Text('${post.views}'),
