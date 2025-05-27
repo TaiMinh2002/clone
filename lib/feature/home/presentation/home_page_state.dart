@@ -7,7 +7,12 @@ class HomePageLoading extends HomePageState {}
 class HomePageLoaded extends HomePageState {
   final List<Post> posts;
   final bool hasMore;
-  HomePageLoaded({required this.posts, required this.hasMore});
+  final Map<int, int> commentCounts;
+  HomePageLoaded({
+    required this.posts,
+    required this.hasMore,
+    required this.commentCounts,
+  });
 }
 
 class HomePageError extends HomePageState {

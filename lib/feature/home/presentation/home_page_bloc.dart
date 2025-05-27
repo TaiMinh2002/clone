@@ -10,6 +10,7 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
   final int _limit = 10;
   bool _hasMore = true;
   final List<Post> _posts = [];
+  final Map<int, int> _commentCounts = {};
 
   HomePageBloc(this.postService) : super(HomePageLoading()) {
     on<HomePageFetchPosts>(_onFetchPosts);
@@ -20,13 +21,25 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
     Emitter<HomePageState> emit,
   ) async {
     if (!_hasMore && _skip != 0) return;
-    emit(HomePageLoading());
+    if (_skip == 0) emit(HomePageLoading());
     try {
       final posts = await postService.fetchPosts(limit: _limit, skip: _skip);
       if (posts.length < _limit) _hasMore = false;
       _posts.addAll(posts);
+      for (final post in posts) {
+        if (!_commentCounts.containsKey(post.id)) {
+          final (_, total) = await postService.fetchCommentsByPostId(post.id);
+          _commentCounts[post.id] = total;
+        }
+      }
       _skip += _limit;
-      emit(HomePageLoaded(posts: List.from(_posts), hasMore: _hasMore));
+      emit(
+        HomePageLoaded(
+          posts: List.from(_posts),
+          hasMore: _hasMore,
+          commentCounts: Map.from(_commentCounts),
+        ),
+      );
     } catch (e) {
       emit(HomePageError(message: e.toString()));
     }

@@ -42,7 +42,7 @@ class _SignInPageState extends State<SignInPage> {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(response.message)));
-          await context.router.push(const DashboardRoute());
+          await context.router.replaceAll([const DashboardRoute()]);
         }
       } else {
         if (mounted) {

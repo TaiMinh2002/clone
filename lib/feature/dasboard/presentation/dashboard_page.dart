@@ -23,6 +23,14 @@ class _DashboardPageState extends State<DashboardPage> {
     AssetIcons.profile,
   ];
 
+  final List<Widget> _pages = [
+    const HomePage(),
+    const Center(child: Text('Search Page')),
+    const Center(child: Text('Reel Page')),
+    const Center(child: Text('Cart Page')),
+    const Center(child: Text('Profile Page')),
+  ];
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -32,7 +40,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: HomePage(),
+      body: _pages[_selectedIndex],
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),

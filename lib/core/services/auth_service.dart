@@ -126,6 +126,7 @@ class AuthService {
     required String password,
   }) async {
     try {
+      // ignore: inference_failure_on_function_invocation
       final response = await _dio.post(
         '/auth/login',
         data: {'username': username, 'password': password},

@@ -25,6 +25,7 @@ mixin _$Post {
   String get title => throw _privateConstructorUsedError;
   String get body => throw _privateConstructorUsedError;
   List<String> get tags => throw _privateConstructorUsedError;
+  Reactions get reactions => throw _privateConstructorUsedError;
   int get views => throw _privateConstructorUsedError;
   int get userId => throw _privateConstructorUsedError;
 
@@ -47,9 +48,12 @@ abstract class $PostCopyWith<$Res> {
     String title,
     String body,
     List<String> tags,
+    Reactions reactions,
     int views,
     int userId,
   });
+
+  $ReactionsCopyWith<$Res> get reactions;
 }
 
 /// @nodoc
@@ -71,6 +75,7 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
     Object? title = null,
     Object? body = null,
     Object? tags = null,
+    Object? reactions = null,
     Object? views = null,
     Object? userId = null,
   }) {
@@ -96,6 +101,11 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
                     ? _value.tags
                     : tags // ignore: cast_nullable_to_non_nullable
                         as List<String>,
+            reactions:
+                null == reactions
+                    ? _value.reactions
+                    : reactions // ignore: cast_nullable_to_non_nullable
+                        as Reactions,
             views:
                 null == views
                     ? _value.views
@@ -109,6 +119,16 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
           )
           as $Val,
     );
+  }
+
+  /// Create a copy of Post
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $ReactionsCopyWith<$Res> get reactions {
+    return $ReactionsCopyWith<$Res>(_value.reactions, (value) {
+      return _then(_value.copyWith(reactions: value) as $Val);
+    });
   }
 }
 
@@ -125,9 +145,13 @@ abstract class _$$PostImplCopyWith<$Res> implements $PostCopyWith<$Res> {
     String title,
     String body,
     List<String> tags,
+    Reactions reactions,
     int views,
     int userId,
   });
+
+  @override
+  $ReactionsCopyWith<$Res> get reactions;
 }
 
 /// @nodoc
@@ -146,6 +170,7 @@ class __$$PostImplCopyWithImpl<$Res>
     Object? title = null,
     Object? body = null,
     Object? tags = null,
+    Object? reactions = null,
     Object? views = null,
     Object? userId = null,
   }) {
@@ -171,6 +196,11 @@ class __$$PostImplCopyWithImpl<$Res>
                 ? _value._tags
                 : tags // ignore: cast_nullable_to_non_nullable
                     as List<String>,
+        reactions:
+            null == reactions
+                ? _value.reactions
+                : reactions // ignore: cast_nullable_to_non_nullable
+                    as Reactions,
         views:
             null == views
                 ? _value.views
@@ -194,6 +224,7 @@ class _$PostImpl implements _Post {
     required this.title,
     required this.body,
     required final List<String> tags,
+    required this.reactions,
     required this.views,
     required this.userId,
   }) : _tags = tags;
@@ -216,13 +247,15 @@ class _$PostImpl implements _Post {
   }
 
   @override
+  final Reactions reactions;
+  @override
   final int views;
   @override
   final int userId;
 
   @override
   String toString() {
-    return 'Post(id: $id, title: $title, body: $body, tags: $tags, views: $views, userId: $userId)';
+    return 'Post(id: $id, title: $title, body: $body, tags: $tags, reactions: $reactions, views: $views, userId: $userId)';
   }
 
   @override
@@ -234,6 +267,8 @@ class _$PostImpl implements _Post {
             (identical(other.title, title) || other.title == title) &&
             (identical(other.body, body) || other.body == body) &&
             const DeepCollectionEquality().equals(other._tags, _tags) &&
+            (identical(other.reactions, reactions) ||
+                other.reactions == reactions) &&
             (identical(other.views, views) || other.views == views) &&
             (identical(other.userId, userId) || other.userId == userId));
   }
@@ -246,6 +281,7 @@ class _$PostImpl implements _Post {
     title,
     body,
     const DeepCollectionEquality().hash(_tags),
+    reactions,
     views,
     userId,
   );
@@ -270,6 +306,7 @@ abstract class _Post implements Post {
     required final String title,
     required final String body,
     required final List<String> tags,
+    required final Reactions reactions,
     required final int views,
     required final int userId,
   }) = _$PostImpl;
@@ -285,6 +322,8 @@ abstract class _Post implements Post {
   @override
   List<String> get tags;
   @override
+  Reactions get reactions;
+  @override
   int get views;
   @override
   int get userId;
@@ -294,5 +333,176 @@ abstract class _Post implements Post {
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$PostImplCopyWith<_$PostImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+Reactions _$ReactionsFromJson(Map<String, dynamic> json) {
+  return _Reactions.fromJson(json);
+}
+
+/// @nodoc
+mixin _$Reactions {
+  int get likes => throw _privateConstructorUsedError;
+  int get dislikes => throw _privateConstructorUsedError;
+
+  /// Serializes this Reactions to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of Reactions
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $ReactionsCopyWith<Reactions> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ReactionsCopyWith<$Res> {
+  factory $ReactionsCopyWith(Reactions value, $Res Function(Reactions) then) =
+      _$ReactionsCopyWithImpl<$Res, Reactions>;
+  @useResult
+  $Res call({int likes, int dislikes});
+}
+
+/// @nodoc
+class _$ReactionsCopyWithImpl<$Res, $Val extends Reactions>
+    implements $ReactionsCopyWith<$Res> {
+  _$ReactionsCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of Reactions
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? likes = null, Object? dislikes = null}) {
+    return _then(
+      _value.copyWith(
+            likes:
+                null == likes
+                    ? _value.likes
+                    : likes // ignore: cast_nullable_to_non_nullable
+                        as int,
+            dislikes:
+                null == dislikes
+                    ? _value.dislikes
+                    : dislikes // ignore: cast_nullable_to_non_nullable
+                        as int,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$ReactionsImplCopyWith<$Res>
+    implements $ReactionsCopyWith<$Res> {
+  factory _$$ReactionsImplCopyWith(
+    _$ReactionsImpl value,
+    $Res Function(_$ReactionsImpl) then,
+  ) = __$$ReactionsImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int likes, int dislikes});
+}
+
+/// @nodoc
+class __$$ReactionsImplCopyWithImpl<$Res>
+    extends _$ReactionsCopyWithImpl<$Res, _$ReactionsImpl>
+    implements _$$ReactionsImplCopyWith<$Res> {
+  __$$ReactionsImplCopyWithImpl(
+    _$ReactionsImpl _value,
+    $Res Function(_$ReactionsImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of Reactions
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? likes = null, Object? dislikes = null}) {
+    return _then(
+      _$ReactionsImpl(
+        likes:
+            null == likes
+                ? _value.likes
+                : likes // ignore: cast_nullable_to_non_nullable
+                    as int,
+        dislikes:
+            null == dislikes
+                ? _value.dislikes
+                : dislikes // ignore: cast_nullable_to_non_nullable
+                    as int,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ReactionsImpl implements _Reactions {
+  const _$ReactionsImpl({required this.likes, required this.dislikes});
+
+  factory _$ReactionsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ReactionsImplFromJson(json);
+
+  @override
+  final int likes;
+  @override
+  final int dislikes;
+
+  @override
+  String toString() {
+    return 'Reactions(likes: $likes, dislikes: $dislikes)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ReactionsImpl &&
+            (identical(other.likes, likes) || other.likes == likes) &&
+            (identical(other.dislikes, dislikes) ||
+                other.dislikes == dislikes));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, likes, dislikes);
+
+  /// Create a copy of Reactions
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ReactionsImplCopyWith<_$ReactionsImpl> get copyWith =>
+      __$$ReactionsImplCopyWithImpl<_$ReactionsImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ReactionsImplToJson(this);
+  }
+}
+
+abstract class _Reactions implements Reactions {
+  const factory _Reactions({
+    required final int likes,
+    required final int dislikes,
+  }) = _$ReactionsImpl;
+
+  factory _Reactions.fromJson(Map<String, dynamic> json) =
+      _$ReactionsImpl.fromJson;
+
+  @override
+  int get likes;
+  @override
+  int get dislikes;
+
+  /// Create a copy of Reactions
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ReactionsImplCopyWith<_$ReactionsImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -10,9 +10,19 @@ class Post with _$Post {
     required String title,
     required String body,
     required List<String> tags,
+    required Reactions reactions,
     required int views,
     required int userId,
   }) = _Post;
 
   factory Post.fromJson(Map<String, dynamic> json) => _$PostFromJson(json);
+}
+
+@freezed
+class Reactions with _$Reactions {
+  const factory Reactions({required int likes, required int dislikes}) =
+      _Reactions;
+
+  factory Reactions.fromJson(Map<String, dynamic> json) =>
+      _$ReactionsFromJson(json);
 }
