@@ -151,7 +151,7 @@ class _HomePageViewState extends State<HomePageView> {
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: Text('User có id là ${post.userId}'),
+            child: Text('User id: ${post.userId}'),
           ),
           const Spacer(),
           SvgPicture.asset(AssetIcons.settingPost),
