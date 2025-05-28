@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:instagram/core/models/user.dart';
 import 'package:instagram/feature/profile/data/profile_service.dart';
 
@@ -10,44 +12,51 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  User? user;
-  bool isLoading = true;
-  String? error;
   final _profileService = ProfileService();
+  User? _user;
+  File? _selectedImage;
+  bool _isLoading = true;
+  String? _error;
 
   @override
   void initState() {
     super.initState();
-    _fetchUserProfile();
+    _loadProfile();
   }
 
-  Future<void> _fetchUserProfile() async {
+  Future<void> _loadProfile() async {
     try {
-      final userData = await _profileService.getCurrentUser();
       setState(() {
-        user = userData;
-        isLoading = false;
+        _isLoading = true;
+        _error = null;
+      });
+      final user = await _profileService.getCurrentUser();
+      setState(() {
+        _user = user;
+        _isLoading = false;
       });
     } catch (e) {
       setState(() {
-        error = e.toString();
-        isLoading = false;
+        _error = e.toString();
+        _isLoading = false;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return const Center(child: CircularProgressIndicator());
+    if (_isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    if (error != null) {
-      return Center(child: Text('Error: $error'));
+    if (_error != null) {
+      return Scaffold(body: Center(child: Text('Error: $_error')));
     }
 
-    if (user == null) {
-      return const Center(child: Text('No user data available'));
+    if (_user == null) {
+      return const Scaffold(
+        body: Center(child: Text('No user data available')),
+      );
     }
 
     return Scaffold(
@@ -58,14 +67,32 @@ class _ProfilePageState extends State<ProfilePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
-              child: CircleAvatar(
-                radius: 50,
-                backgroundImage: user?.image != null
-                    ? NetworkImage(user!.image!)
-                    : null,
-                child: user?.image == null
-                    ? const Icon(Icons.person, size: 50)
-                    : null,
+              child: Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundImage: _selectedImage != null
+                        ? FileImage(_selectedImage!)
+                        : (_user!.image != null
+                                  ? NetworkImage(_user!.image!)
+                                  : null)
+                              as ImageProvider<Object>?,
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.camera_alt, color: Colors.white),
+                        onPressed: () => _showImagePickerOptions(context),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 24),
@@ -74,34 +101,90 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 _buildInfoRow(
                   'Name',
-                  '${user?.firstName ?? ''} ${user?.lastName ?? ''}',
+                  '${_user!.firstName ?? ''} ${_user!.lastName ?? ''}',
                 ),
-                _buildInfoRow('Username', user?.username ?? 'N/A'),
-                _buildInfoRow('Email', user?.email ?? 'N/A'),
-                _buildInfoRow('Phone', user?.phone ?? 'N/A'),
+                _buildInfoRow('Username', _user!.username ?? 'N/A'),
+                _buildInfoRow('Email', _user!.email ?? 'N/A'),
+                _buildInfoRow('Phone', _user!.phone ?? 'N/A'),
               ],
             ),
             const SizedBox(height: 16),
             _buildInfoCard(
               title: 'Location',
               children: [
-                _buildInfoRow('Address', user?.address?.address ?? 'N/A'),
-                _buildInfoRow('City', user?.address?.city ?? 'N/A'),
-                _buildInfoRow('Country', user?.address?.country ?? 'N/A'),
+                _buildInfoRow('Address', _user!.address?.address ?? 'N/A'),
+                _buildInfoRow('City', _user!.address?.city ?? 'N/A'),
+                _buildInfoRow('Country', _user!.address?.country ?? 'N/A'),
               ],
             ),
             const SizedBox(height: 16),
             _buildInfoCard(
               title: 'Work Information',
               children: [
-                _buildInfoRow('Company', user?.company?.name ?? 'N/A'),
-                _buildInfoRow('Position', user?.company?.title ?? 'N/A'),
-                _buildInfoRow('Department', user?.company?.department ?? 'N/A'),
+                _buildInfoRow('Company', _user!.company?.name ?? 'N/A'),
+                _buildInfoRow('Position', _user!.company?.title ?? 'N/A'),
+                _buildInfoRow(
+                  'Department',
+                  _user!.company?.department ?? 'N/A',
+                ),
               ],
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _pickImage(BuildContext context, ImageSource source) async {
+    try {
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(source: source);
+      if (pickedFile != null) {
+        final image = File(pickedFile.path);
+        if (mounted) {
+          setState(() {
+            _selectedImage = image;
+          });
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          // ignore: use_build_context_synchronously
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to pick image: $e')));
+      }
+    }
+  }
+
+  void _showImagePickerOptions(BuildContext context) {
+    // ignore: inference_failure_on_function_invocation
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Choose from Gallery'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(context, ImageSource.gallery);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Take a Photo'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(context, ImageSource.camera);
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
